@@ -1,0 +1,17 @@
+---
+
+- name: Journald Events
+  hosts: all
+  sources:
+   - ansible.eda.kafka:
+       host: 10.0.11.169
+       port: 9092
+       topic: network
+
+  rules:
+
+   - name: Issue with http
+     condition: event.body.message == "Stopped The Apache HTTP Server."
+     action:
+       run_playbook:
+        name: http_journal.yml

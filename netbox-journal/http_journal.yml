@@ -1,0 +1,63 @@
+---
+- name: "Create netbox service"
+  connection: local
+  hosts: localhost
+  gather_facts: False
+
+  vars:
+    netbox_url: https://10.0.11.153
+    netbox_token: 82f1f2ccedda801a7cc5ecef53b3dc00b82c6f97
+    inventory_hostname: sfsdf
+    inventory_ipaddress: 10.0.11.180
+
+  tasks:
+  - name: debug
+    debug:
+      msg: "Thank youcong, {{ ansible_eda.event.body.host.ip[0] }}"
+  - name: Get ip address
+    uri:
+      url: "{{netbox_url}}/api/ipam/ip-addresses/?address={{ ansible_eda.event.body.host.ip[0] }}"
+      method: GET
+      return_content: yes
+      validate_certs: no
+      headers:
+        Accept: application/json
+        Authorization: Token {{netbox_token}}
+    register: ipaddressvm
+    delegate_to: localhost
+  - name: show ipaddress
+    debug:
+      msg: "{{ ipaddressvm.json.results[0].assigned_object.virtual_machine.name }}"
+
+  - name: Get ID of virtual machine
+    uri:
+      url: "{{netbox_url}}/api/virtualization/virtual-machines/?name={{ ipaddressvm.json.results[0].assigned_object.virtual_machine.name }}"
+      method: GET
+      return_content: yes
+      validate_certs: no
+      headers:
+        Accept: application/json
+        Authorization: Token {{netbox_token}}
+    register: vm
+    delegate_to: localhost
+
+  - name: show VM ID
+    debug:
+      msg: "{{ vm.json.results[0].id }}"
+
+  - name: Cap nhat journal
+    uri:
+      url: "https://10.0.11.153/api/extras/journal-entries/"
+      method: POST
+      return_content: yes
+      status_code: 201
+      validate_certs: no
+      headers:
+        Authorization: Token {{netbox_token}}
+      body_format: json
+      body:
+        "assigned_object_type": "virtualization.virtualmachine"
+        "assigned_object_id": "{{ vm.json.results[0].id }}"
+        "created_by": 1
+        "kind": "info"
+        "comments": "{{ ansible_eda.event.body.message }}"
