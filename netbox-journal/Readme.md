@@ -3,7 +3,7 @@
 ## Áp dụng cho usecase cập nhật tự động event của VM vào journal trên netbox.
 
 ### Mô hình 
-[!](/images/eda-ansible-kafka1.png)
+![](./images/eda-ansible-kafka1.png)
 
 ### Mô tả:
 
