@@ -8,7 +8,7 @@
 ### Mô tả:
 
 - Các máy client sẽ cài đặt filebeat để gửi log của journald trong linux để đẩy về Kafka.  Trong ví dụ này sẽ lấy journald của dịch vụ Apache2
-- EDA ansible sẽ listien topic trên kafka, sau đó trigger các event theo điều kiện.
+- EDA ansible sẽ listen topic trên kafka, sau đó trigger các event theo điều kiện.
 - Khi điều kiện có nội dung `Stopped The Apache HTTP Server.` thì sẽ thực hiện playbook để gọi API tới netbox và thực hiện cập nhật journal cho VM có IP tương ứng.
 
 
